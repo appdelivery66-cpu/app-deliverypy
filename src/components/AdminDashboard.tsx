@@ -1997,6 +1997,131 @@ export default function AdminDashboard() {
                     </div>
                 )}
 
+                {/* ÁREA DE IMPRESIÓN (OCULTA EN PANTALLA, VISIBLE EN IMPRESORA) */}
+                {printableOrder && (
+                    <div id="printable-area" className="bg-white p-4 text-black font-sans leading-tight">
+                        {printType === 'kitchen' && (
+                            <div className="receipt-section kitchen">
+                                <div className="text-[14px] font-black text-center mb-2 uppercase">*** COCINA ***</div>
+                                <div className="text-center mb-4">
+                                    <h3 className="font-black text-[18px]">PEDIDO: #{printableOrder.id}</h3>
+                                    <p className="text-[12px] font-bold">{printableOrder.date}</p>
+                                </div>
+
+                                <div className="space-y-2 mb-6 border-y-2 border-black py-4">
+                                    {Array.isArray(printableOrder.items) && printableOrder.items.map((item: any, i: number) => (
+                                        <div key={i} className="space-y-1 border-b border-black/10 pb-2 last:border-0">
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-[16px] font-black">{item.quantity}x {item.name}</span>
+                                            </div>
+                                            {item.extras && (
+                                                <p className="text-[12px] font-bold pl-4 uppercase">
+                                                    + {item.extras}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {printableOrder.observation && (
+                                    <div className="mb-6 border-2 border-black p-2">
+                                        <p className="text-[11px] font-black uppercase mb-1">OBSERVACIÓN / MESA:</p>
+                                        <p className="text-[14px] font-black">{printableOrder.observation}</p>
+                                    </div>
+                                )}
+
+                                <div className="text-center mt-6 text-[10px] font-black uppercase">-- FIN DE COMANDA --</div>
+                            </div>
+                        )}
+
+                        {printType === 'customer' && (
+                            <>
+                                <div className="receipt-section delivery h-auto mb-10 border-b-2 border-dashed border-black pb-8">
+                                    <div className="text-[14px] font-black text-center mb-2 uppercase">*** VÍA ENTREGA ***</div>
+                                    <div className="text-center mb-4">
+                                        <p className="text-[12px] font-bold">{data?.store?.name || 'Sistema'}</p>
+                                        <p className="text-[12px] font-black">PEDIDO: #{printableOrder.id}</p>
+                                    </div>
+
+                                    <div className="mb-4 p-2 bg-black text-white rounded-lg">
+                                        <p className="text-[11px] font-black uppercase">CLIENTE / DIRECCIÓN:</p>
+                                        <p className="text-[13px] font-black">{printableOrder.customer?.name || "Cliente"}</p>
+                                        <p className="text-[13px] font-bold">{printableOrder.customer?.address || printableOrder.address || "Retirada en Local"}</p>
+                                        {printableOrder.customer?.neighborhood && <p className="text-[12px] font-bold">Barrio: {printableOrder.customer.neighborhood}</p>}
+                                    </div>
+
+                                    <div className="space-y-1 mb-4">
+                                        {Array.isArray(printableOrder.items) && printableOrder.items.map((item: any, i: number) => (
+                                            <div key={i} className="flex justify-between text-[11px]">
+                                                <span>{item.quantity}x {item.name}</span>
+                                                <span>Gs. {((item.price || 0) * (item.quantity || 1)).toLocaleString('es-ES')}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="border-t border-black pt-2 font-black">
+                                        <div className="flex justify-between text-[14px]">
+                                            <span>TOTAL A COBRAR:</span>
+                                            <span>Gs. {(printableOrder.total || 0).toLocaleString('es-ES')}</span>
+                                        </div>
+                                        <div className="text-[13px] uppercase mt-1">PAGO: {printableOrder.payment || 'N/A'}</div>
+                                    </div>
+                                    <div className="text-center mt-6 text-[10px] font-black uppercase">-- FIN DE VÍA ENTREGA --</div>
+                                </div>
+
+                                <div className="receipt-section customer h-auto">
+                                    <div className="text-[12px] font-black text-center mb-2 uppercase">*** RECIBO DEL CLIENTE ***</div>
+                                    <div className="text-center mb-4">
+                                        <h3 className="font-black text-[16px] uppercase">{data?.store?.name || 'Sistema'}</h3>
+                                        <p className="text-[10px] font-normal">{data?.store?.address || ''}</p>
+                                        <p className="text-[10px] font-normal">{printableOrder.date}</p>
+                                    </div>
+
+                                    <div className="space-y-1 mb-4 border-t border-b border-black py-2">
+                                        {Array.isArray(printableOrder.items) && printableOrder.items.map((item: any, i: number) => (
+                                            <div key={i} className="space-y-0.5">
+                                                <div className="flex justify-between text-[11px] font-bold">
+                                                    <span>{item.quantity}x {item.name}</span>
+                                                    <span>Gs. {((item.price || 0) * (item.quantity || 1)).toLocaleString('es-ES')}</span>
+                                                </div>
+                                                {Array.isArray(item.extras) && item.extras.map((e: any, ei: number) => (
+                                                    <div key={ei} className="flex justify-between text-[10px] pl-4 italic opacity-80">
+                                                        <span>+ {e.name}</span>
+                                                        <span>Gs. {(e.price || 0).toLocaleString('es-ES')}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="space-y-1 text-[11px] font-black">
+                                        <div className="flex justify-between text-[15px]">
+                                            <span>TOTAL:</span>
+                                            <span>Gs. {(printableOrder.total || 0).toLocaleString('es-ES')}</span>
+                                        </div>
+                                        <p className="uppercase">PAGO: {printableOrder.payment || 'N/A'}</p>
+                                    </div>
+
+                                    <div className="text-center mt-6 pt-4 border-t border-dashed border-black">
+                                        <p className="text-[11px] font-bold">¡Gracias por la preferencia!</p>
+                                        <p className="text-[10px] mt-1">Síguenos en Instagram</p>
+                                    </div>
+                                    <div className="text-center mt-8 text-[9px] font-black opacity-30 tracking-widest">
+                                        - DELIVERY PRO SYSTEM -
+                                    </div>
+                                </div>
+                            </>
+                        )}
+                        <div className="h-20 no-print"></div>
+                        <button
+                            onClick={() => { setPrintableOrder(null); setPrintType(null); }}
+                            className="no-print mt-4 w-full bg-slate-100 text-slate-400 py-2 text-[10px] font-bold uppercase rounded-lg"
+                        >
+                            Cerrar Visualización
+                        </button>
+                    </div>
+                )}
+
             </>
         );
     } catch (e) {
