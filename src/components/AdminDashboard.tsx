@@ -8,7 +8,7 @@ import { BRANDING } from '@/lib/branding';
 
 export default function AdminDashboard() {
     const [data, setData] = useState<any>(null);
-    const [activeTab, setActiveTab] = useState<'home' | 'orders' | 'products' | 'categories' | 'config' | 'banners' | 'coupons' | 'analytics' | 'pdv'>('home');
+    const [activeTab, setActiveTab] = useState<'home' | 'orders' | 'products' | 'categories' | 'config' | 'banners' | 'coupons' | 'analytics' | 'pdv' | 'cash'>('home');
     const [selectedOrder, setSelectedOrder] = useState<any>(null);
     const [printableOrder, setPrintableOrder] = useState<any>(null);
     const [printType, setPrintType] = useState<'kitchen' | 'customer' | null>(null);
@@ -584,7 +584,19 @@ export default function AdminDashboard() {
                                 Reportes
                                 <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'analytics' ? "rotate-90" : "")} />
                             </button>
+                            <button
+                                onClick={() => { setActiveTab('cash'); setIsSidebarOpen(false); }}
+                                className={cn(
+                                    "flex items-center gap-3 p-4 rounded-2xl transition-all font-bold group text-sm",
+                                    activeTab === 'cash' ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-white/5 opacity-60 hover:opacity-100"
+                                )}
+                            >
+                                <Calculator className="w-5 h-5" />
+                                Caja
+                                <ChevronRight className={cn("ml-auto w-4 h-4 transition-transform", activeTab === 'cash' ? "rotate-90" : "")} />
+                            </button>
                         </nav>
+
 
                         <button className="flex items-center gap-3 p-4 rounded-2xl opacity-40 hover:opacity-100 hover:bg-red-500/10 text-red-400 font-bold transition-all mt-auto border-t border-white/5 pt-6">
                             <LogOut className="w-5 h-5" /> Salir
